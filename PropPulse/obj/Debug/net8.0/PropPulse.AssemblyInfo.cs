@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PropPulse")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+365b46f6ba341a192e88a60a25c257623dd0f638")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d491bf87f510feb166f37887e98f716ad508f172")]
 [assembly: System.Reflection.AssemblyProductAttribute("PropPulse")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PropPulse")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
