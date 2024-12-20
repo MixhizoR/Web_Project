@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using PropPulse.Data;
 namespace PropPulse
 {
     public class Program
@@ -5,6 +8,8 @@ namespace PropPulse
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<PropPulseContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("PropPulseContext") ?? throw new InvalidOperationException("Connection string 'PropPulseContext' not found.")));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

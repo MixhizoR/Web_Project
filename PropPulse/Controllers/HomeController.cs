@@ -23,6 +23,27 @@ namespace PropPulse.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                // Kayýt iþlemleri burada yapýlabilir
+                // Kullanýcýyý veritabanýna kaydedebilirsiniz
+                return RedirectToAction("Index"); // Baþka bir sayfaya yönlendirme
+            }
+
+            return View(user); // Modeli yeniden döndürür
+        }
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
