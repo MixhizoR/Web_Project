@@ -12,7 +12,7 @@ using PropPulse.Data;
 namespace PropPulse.Migrations
 {
     [DbContext(typeof(PropPulseContext))]
-    [Migration("20241217125007_InitialCreate")]
+    [Migration("20241220075645_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -65,9 +65,6 @@ namespace PropPulse.Migrations
                     b.Property<string>("ProfilePhoto")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
