@@ -28,11 +28,11 @@ namespace PropPulse.Models
         [Required]
         public DateTime DateOfBirth { get; set; }
 
-        public string ProfilePhoto { get; set; } = "default_profile_photo.jpg"; // Varsayılan fotoğraf
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public List<Property>? Properties { get; set; }
 
     }
 }

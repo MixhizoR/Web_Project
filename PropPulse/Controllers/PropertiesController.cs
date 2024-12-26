@@ -1,157 +1,140 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PropPulse.Data;
 using PropPulse.Models;
+using System.Collections.Generic;
 
 namespace PropPulse.Controllers
 {
     public class PropertiesController : Controller
     {
         private readonly PropPulseContext _context;
-
         public PropertiesController(PropPulseContext context)
         {
             _context = context;
         }
-
-        // GET: Properties
-        public async Task<IActionResult> Index()
+        // GET: Ads/Favorites
+        public IActionResult Favorites()
         {
-            return View(await _context.Properties.ToListAsync());
+            // Kullanıcının favorilerini burada sağlayın (örnek veri)
+            var favorites = new List<string> { "Favori 1", "Favori 2", "Favori 3" };
+            ViewData["Title"] = "Favorilerim";
+
+            // Veriyi View'a gönderiyoruz
+            return View(favorites);  // Model geçiyoruz
         }
 
-        // GET: Properties/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // POST: Ads/CreateAd
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Property property, List<IFormFile> Photos)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                // Cookie'den Kullanıcı ID'sini Al
+                if (!HttpContext.Request.Cookies.TryGetValue("UserID", out var userIdValue) || !int.TryParse(userIdValue, out var userId))
+                {
+                    // Eğer cookie yoksa veya geçersizse, hata döndür.
+                    ModelState.AddModelError(string.Empty, "Giriş yapmanız gerekiyor.");
+                    return View(property);
+                }
 
-            var @property = await _context.Properties
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@property == null)
+                //Fotoğraf validasyonu
+                //if (Photos.Count < 3 || Photos.Count > 5)
+                //{
+                //    ModelState.AddModelError("Photos", "En az 3, en fazla 5 fotoğraf yüklemelisiniz.");
+                //}
+
+                if (ModelState.IsValid)
+                {
+                    // Fotoğrafları yükleme ve kaydetme
+                    //property.Photos = new List<string>();
+                    //foreach (var photo in Photos)
+                    //{
+                    //    if (photo.Length > 0)
+                    //    {
+                    //        try
+                    //        {
+                    //            var fileName = Path.GetFileName(photo.FileName);
+                    //            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                    //            var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    //            // Klasör yoksa oluştur
+                    //            if (!Directory.Exists(uploadsFolder))
+                    //            {
+                    //                Directory.CreateDirectory(uploadsFolder);
+                    //            }
+
+                    //            // Dosyayı kaydet
+                    //            using (var stream = new FileStream(filePath, FileMode.Create))
+                    //            {
+                    //                await photo.CopyToAsync(stream);
+                    //            }
+
+                    //            // Kaydedilen dosya yolunu ekle
+                    //            property.Photos.Add($"/uploads/{fileName}");
+                    //        }
+                    //        catch (Exception ex)
+                    //        {
+                    //            // Fotoğraf yükleme hatası loglama
+                    //            Console.WriteLine($"Fotoğraf yüklenirken hata oluştu: {ex.Message}");
+                    //            ModelState.AddModelError("Photos", "Bazı fotoğraflar yüklenemedi. Lütfen tekrar deneyin.");
+                    //            return View(property);
+                    //        }
+                    //    }
+                    //}
+
+                   // Kullanıcı ID'sini Property'e Ekle
+                property.UserID = userId;
+
+                    // Veritabanına kaydet
+                    _context.Properties.Add(property);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("Index", "Home"); // Başarılı işlem sonrası yönlendirme
+                }
+
+                return View(property); // Validasyon hatası varsa formu yeniden yükle
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                // Genel hata yakalama
+                Console.WriteLine($"Hata oluştu: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+                return View(property);
             }
-
-            return View(@property);
         }
 
-        // GET: Properties/Create
+
+
+        // GET: Ads/MyAds
+        public IActionResult MyAds()
+        {
+            // Kullanıcının ilanlarına dair örnek veri
+            var ads = new List<string> { "İlan 1", "İlan 2", "İlan 3" };
+            ViewData["Title"] = "İlanlarım";
+
+            // View'a model gönderiyoruz
+            return View(ads); // Modeli View'a gönderiyoruz
+        }
+
+        // GET: Ads/Create
         public IActionResult Create()
         {
+            // İlan verme sayfası için örnek veriler
+            var adTypes = new List<string> { "Kiralık", "Satılık" }; // İlan türlerini oluşturuyoruz
+            ViewData["Title"] = "İlan Ver";
+            ViewData["AdTypes"] = adTypes;  // İlan türlerini view'a gönderiyoruz
+
+            // View'a model gönderiyoruz
             return View();
         }
 
-        // POST: Properties/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Price,Area,Address,Description,Photos,IsFurnished")] Property @property)
+        // GET: Ads/CreateAdForm
+        public IActionResult CreateAdForm()
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(@property);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(@property);
-        }
-
-        // GET: Properties/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var @property = await _context.Properties.FindAsync(id);
-            if (@property == null)
-            {
-                return NotFound();
-            }
-            return View(@property);
-        }
-
-        // POST: Properties/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Price,Area,Address,Description,Photos,IsFurnished")] Property @property)
-        {
-            if (id != @property.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(@property);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PropertyExists(@property.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(@property);
-        }
-
-        // GET: Properties/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var @property = await _context.Properties
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@property == null)
-            {
-                return NotFound();
-            }
-
-            return View(@property);
-        }
-
-        // POST: Properties/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var @property = await _context.Properties.FindAsync(id);
-            if (@property != null)
-            {
-                _context.Properties.Remove(@property);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool PropertyExists(int id)
-        {
-            return _context.Properties.Any(e => e.Id == id);
+            // İlan oluşturma formu (örnek veri gerekirse eklenebilir)
+            return View();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace PropPulse.Models
 {
@@ -31,15 +32,20 @@ namespace PropPulse.Models
         [StringLength(500, ErrorMessage = "Description can be a maximum of 500 characters.")]
         public string Description { get; set; }
 
-        // Fotoğraflar: Kullanıcı, en az 3 ve en fazla 5 fotoğraf eklemelidir.
-        [Required(ErrorMessage = "At least 3 photos are required.")]
-        [MinLength(3, ErrorMessage = "You must upload at least 3 photos.")]
-        [MaxLength(5, ErrorMessage = "You can upload up to 5 photos.")]
-        public List<string> Photos { get; set; }
+        //[Required(ErrorMessage = "At least 3 photos are required.")]
+        //[MaxLength(3, ErrorMessage = "You can upload up to 3 photos.")]
+        //public List<string> Photos { get; set; }
 
         // Eşyalı Durum: Kullanıcı, evin eşyalı mı eşyasız mı olduğunu belirtmelidir.
         [Required(ErrorMessage = "You must specify whether the property is furnished.")]
         public bool IsFurnished { get; set; }
+
+        [Required]
+        public int SquareMeter { get; set; } // SquareMeter
+        [Required]
+        public int UserID { get; set; }
+        public User? User { get; set; }
+
     }
 }
 

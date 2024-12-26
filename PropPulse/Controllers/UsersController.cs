@@ -76,43 +76,51 @@ namespace PropPulse.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Find the user in the database by email
-                var user = _context.User.FirstOrDefault(u => u.Email == model.Email);
+                // Kullanıcıyı veritabanında email ile bul
+                var user = await _context.User.FirstOrDefaultAsync(u => u.Email == model.Email);
 
-                // If the user exists and the password is correct
-                if (user != null && VerifyPassword(model.Password, user.Password))
+                // Kullanıcı bulunamadıysa hata mesajı ekle
+                if (user == null || !VerifyPassword(model.Password, user.Password))
                 {
-                    // Create claims for the user
-                    var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Email),  // Can also store user ID or email here
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-                };
-
-                    // Create claims identity
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                    // Create authentication properties
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = true  // Keep the user logged in after browser is closed
-                    };
-
-                    // Sign in the user by adding a cookie
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                    return RedirectToAction("Index", "Home");  // Redirect to a protected page
+                    ModelState.AddModelError(string.Empty, "Eposta veya sifre yanlış.");
+                    return View(model);  // Hata mesajı ile birlikte giriş sayfasına dön
                 }
 
-                // If credentials are invalid, show error message
-                ModelState.AddModelError("", "Invalid login attempt.");
+                // Kullanıcı doğrulandıysa, kullanıcı için claim'ler oluştur
+                var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Email),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    };
+
+                // Claim kimliğini oluştur
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                // Kimlik doğrulama özelliklerini oluştur
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = false  // Tarayıcı kapatıldığında kullanıcıyı oturumda tut
+                };
+
+                // Kullanıcıyı oturum açtır
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                HttpContext.Response.Cookies.Append("UserID", user.Id.ToString(), new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(30), // Çerezin geçerlilik süresi
+                    HttpOnly = true, // JavaScript erişimini engeller
+                    Secure = false // Sadece HTTPS üzerinden gönderilmesini sağlar
+                });
+
+                return RedirectToAction("Index", "Home");  // Korunan bir sayfaya yönlendir
             }
 
-            return View(model);  // Return to login page with validation errors
+            return View(model);  // Geçersiz model durumunda giriş sayfasına dön
         }
 
-        
+
+
 
         // POST: Users/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -196,16 +204,6 @@ namespace PropPulse.Controllers
             // Profil bilgilerini güncelleme işlemi yapılabilir (örneğin, veritabanına kaydetme)
             // Burada sadece basit bir mesaj dönüyoruz.
 
-            if (ProfileImage != null && ProfileImage.Length > 0)
-            {
-                // Profil fotoğrafı güncelleme işlemi
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", ProfileImage.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    ProfileImage.CopyTo(stream);
-                }
-            }
-
             TempData["Message"] = "Profil bilgileri başarıyla güncellendi.";
             return RedirectToAction("Profile");
         }
@@ -214,9 +212,9 @@ namespace PropPulse.Controllers
         public IActionResult MyAds()
         {
             // Kullanıcının ilanlarını burada sağlayın (örnek veri)
-            var ads = new List<string> { "İlan 1", "İlan 2", "İlan 3" };
+            //var ads = new List<string>
             ViewData["Title"] = "İlanlarım";
-            return View(ads);
+            return View();
         }
 
         // POST: Users/CreateAd

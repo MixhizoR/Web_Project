@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PropPulse.Data;
 using PropPulse.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace PropPulse
 {
@@ -22,6 +23,11 @@ namespace PropPulse
                 );
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 52428800; // 50 MB
+            });
 
             var app = builder.Build();
 

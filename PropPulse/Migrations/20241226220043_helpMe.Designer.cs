@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PropPulse.Data;
 
@@ -11,9 +12,11 @@ using PropPulse.Data;
 namespace PropPulse.Migrations
 {
     [DbContext(typeof(PropPulseContext))]
-    partial class PropPulseContextModelSnapshot : ModelSnapshot
+    [Migration("20241226220043_helpMe")]
+    partial class helpMe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

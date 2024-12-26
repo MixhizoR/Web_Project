@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PropPulse.Data;
 
@@ -11,9 +12,11 @@ using PropPulse.Data;
 namespace PropPulse.Migrations
 {
     [DbContext(typeof(PropPulseContext))]
-    partial class PropPulseContextModelSnapshot : ModelSnapshot
+    [Migration("20241226181105_DeletedProfilePhoto")]
+    partial class DeletedProfilePhoto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,8 +49,16 @@ namespace PropPulse.Migrations
                     b.Property<bool>("IsFurnished")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Photos")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PropOwnerId")
+                        .HasColumnType("int");
 
                     b.Property<int>("SquareMeter")
                         .HasColumnType("int");
@@ -57,12 +68,9 @@ namespace PropPulse.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("PropOwnerId");
 
                     b.ToTable("Properties");
                 });
@@ -114,13 +122,13 @@ namespace PropPulse.Migrations
 
             modelBuilder.Entity("PropPulse.Models.Property", b =>
                 {
-                    b.HasOne("PropPulse.Models.User", "User")
+                    b.HasOne("PropPulse.Models.User", "PropOwner")
                         .WithMany("Properties")
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("PropOwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("PropOwner");
                 });
 
             modelBuilder.Entity("PropPulse.Models.User", b =>
