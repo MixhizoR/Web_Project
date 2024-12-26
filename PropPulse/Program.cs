@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PropPulse.Data;
+using PropPulse.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace PropPulse
 {
     public class Program
@@ -22,26 +25,28 @@ namespace PropPulse
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // HTTP istekleri yapýlandýrmasýný yapýyoruz.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
+            // HTTPS yönlendirmesi ve statik dosyalar.
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // Routing ve authorization yapýlandýrmasý
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Varsayýlan rota ayarlýyoruz
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            // Uygulamayý çalýþtýrýyoruz.
             app.Run();
         }
     }
