@@ -208,24 +208,6 @@ namespace PropPulse.Controllers
             return RedirectToAction("Profile");
         }
 
-        // GET: Users/MyAds
-        public IActionResult MyAds()
-        {
-            // Kullanıcının ilanlarını burada sağlayın (örnek veri)
-            //var ads = new List<string>
-            ViewData["Title"] = "İlanlarım";
-            return View();
-        }
-
-        // POST: Users/CreateAd
-        [HttpPost]
-        public IActionResult CreateAd(string AdTitle, string AdDescription, decimal AdPrice)
-        {
-            // İlan oluşturma işlemleri (örneğin, veritabanına kaydetme)
-            TempData["Message"] = "İlan başarıyla oluşturuldu.";
-            return RedirectToAction("MyAds");
-        }
-
         // GET: Users/Favorites
         public IActionResult Favorites()
         {

@@ -1,0 +1,32 @@
+﻿@model Property
+
+@{
+    ViewData["Title"] = "İlanı Sil";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">İlanı Sil</h2>
+
+    <div class="alert alert-warning">
+        <strong>Uyarı!</strong> Bu işlemi onaylarsanız ilan silinecektir. Silme işlemi geri alınamaz.
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-3">Başlık</dt>
+        <dd class="col-sm-9">@Model.Title</dd>
+
+        <dt class="col-sm-3">Fiyat</dt>
+        <dd class="col-sm-9">@Model.Price.ToString("C")</dd>
+
+        <dt class="col-sm-3">Alan</dt>
+        <dd class="col-sm-9">@Model.Area m²</dd>
+
+        <dt class="col-sm-3">Adres</dt>
+        <dd class="col-sm-9">@Model.Address</dd>
+    </dl>
+
+    <form method="post">
+        <button type="submit" class="btn btn-danger">Evet, İlanı Sil</button>
+        <a href="@Url.Action("MyProperties", "Properties")" class="btn btn-secondary">Hayır, Geri Dön</a>
+    </form>
+</div>

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PropPulse.Data;
 using PropPulse.Models;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace PropPulse.Controllers
 {
@@ -108,14 +109,24 @@ namespace PropPulse.Controllers
 
 
         // GET: Ads/MyAds
-        public IActionResult MyAds()
+        public IActionResult MyProperties()
         {
-            // Kullanıcının ilanlarına dair örnek veri
-            var ads = new List<string> { "İlan 1", "İlan 2", "İlan 3" };
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                // Kullanıcı kimliği alınamadıysa hata veya yönlendirme yapılabilir
+                return RedirectToAction("Login", "Account");
+            }
+
+            var models = _context.Properties
+            .Where(p => p.UserID == int.Parse(userId))
+            .ToList();
+
             ViewData["Title"] = "İlanlarım";
 
             // View'a model gönderiyoruz
-            return View(ads); // Modeli View'a gönderiyoruz
+            return View(models); // Modeli View'a gönderiyoruz
         }
 
         // GET: Ads/Create
@@ -130,11 +141,97 @@ namespace PropPulse.Controllers
             return View();
         }
 
-        // GET: Ads/CreateAdForm
-        public IActionResult CreateAdForm()
+        // GET: Properties/Edit/1
+        public IActionResult Edit(int id)
         {
-            // İlan oluşturma formu (örnek veri gerekirse eklenebilir)
-            return View();
+            // İlanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // İlanı düzenleme formu için View'a gönder
+            return View(property);
         }
+
+        // POST: Properties/Edit/1
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Property model)
+        {
+            // İlanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // Model geçerli değilse tekrar formu göster
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // İlanın özelliklerini güncelle
+            property.Title = model.Title;
+            property.Price = model.Price;
+            property.Area = model.Area;
+            property.Address = model.Address;
+            property.Description = model.Description;
+            property.IsFurnished = model.IsFurnished;
+            property.SquareMeter = model.SquareMeter;
+
+            // Değişiklikleri kaydet
+            _context.SaveChanges();
+
+            // Kullanıcıyı ilanlar sayfasına yönlendir
+            return RedirectToAction(nameof(MyProperties));
+        }
+
+
+        // GET: Properties/Delete/1
+        public IActionResult Delete(int id)
+        {
+            // İlanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // İlan bilgilerini View'a gönder
+            return View(property);
+        }
+
+
+        // POST: Properties/Delete/1
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            // Silinecek ilanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // İlanı veritabanından sil
+            _context.Properties.Remove(property);
+            _context.SaveChanges();  // Değişiklikleri kaydet
+
+            // Kullanıcıyı ilanlar sayfasına yönlendir
+            return RedirectToAction(nameof(MyProperties));
+        }
+
     }
 }

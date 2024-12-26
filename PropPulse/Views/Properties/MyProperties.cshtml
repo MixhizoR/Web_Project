@@ -9,7 +9,21 @@
         @foreach (var ad in Model)
         {
             <li class="list-group-item">
-                @ad
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5>@ad.Title</h5>
+                        <p><strong>Fiyat:</strong> @ad.Price.ToString("C")</p>
+                        <p><strong>Alan:</strong> @ad.Area m²</p>
+                        <p><strong>Adres:</strong> @ad.Address</p>
+                        <p><strong>Açıklama:</strong> @ad.Description</p>
+                        <p><strong>Eşya Durumu:</strong> @(ad.IsFurnished ? "Eşyalı" : "Eşyasız")</p>
+                        <p><strong>Brüt Metrekare:</strong> @ad.SquareMeter m²</p>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@Url.Action("Edit", "Properties", new { id = ad.Id })" class="btn btn-primary btn-block">Düzenle</a>
+                        <a href="@Url.Action("Delete", "Properties", new { id = ad.Id })" class="btn btn-danger btn-block mt-2">Sil</a>
+                    </div>
+                </div>
             </li>
         }
     </ul>
