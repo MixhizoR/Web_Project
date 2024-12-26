@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PropPulse.Data;
 
@@ -11,9 +12,11 @@ using PropPulse.Data;
 namespace PropPulse.Migrations
 {
     [DbContext(typeof(PropPulseContext))]
-    partial class PropPulseContextModelSnapshot : ModelSnapshot
+    [Migration("20241226222708_Mig1")]
+    partial class Mig1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,12 +49,11 @@ namespace PropPulse.Migrations
                     b.Property<bool>("IsFurnished")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Photos")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SquareMeter")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()

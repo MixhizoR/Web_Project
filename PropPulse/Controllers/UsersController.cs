@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using PropPulse.Data;
 using PropPulse.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace PropPulse.Controllers
 {
@@ -23,7 +20,6 @@ namespace PropPulse.Controllers
         {
             _context = context;
         }
-
 
         // GET: Users/Create
         public IActionResult Create()
@@ -37,10 +33,8 @@ namespace PropPulse.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Şifreyi Bcrypt ile hash'le
                 string hashedPassword = HashPassword(model.Password);
 
-                // Yeni kullanıcı oluştur
                 var user = new User
                 {
                     FirstName = model.FirstName,
@@ -52,7 +46,6 @@ namespace PropPulse.Controllers
                     CreatedAt = DateTime.UtcNow
                 };
 
-                // Kullanıcıyı veritabanına kaydet
                 _context.User.Add(user);
                 await _context.SaveChangesAsync();
 
@@ -60,7 +53,6 @@ namespace PropPulse.Controllers
             }
 
             return View("Create", model);
-
         }
 
         [HttpGet]
@@ -69,65 +61,52 @@ namespace PropPulse.Controllers
             return View();
         }
 
-        // POST: /Auth/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
             if (ModelState.IsValid)
             {
-                // Kullanıcıyı veritabanında email ile bul
                 var user = await _context.User.FirstOrDefaultAsync(u => u.Email == model.Email);
 
-                // Kullanıcı bulunamadıysa hata mesajı ekle
                 if (user == null || !VerifyPassword(model.Password, user.Password))
                 {
-                    ModelState.AddModelError(string.Empty, "Eposta veya sifre yanlış.");
-                    return View(model);  // Hata mesajı ile birlikte giriş sayfasına dön
+                    ModelState.AddModelError(string.Empty, "Eposta veya şifre yanlış.");
+                    return View(model);
                 }
 
-                // Kullanıcı doğrulandıysa, kullanıcı için claim'ler oluştur
                 var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.Email),
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-                    };
-
-                // Claim kimliğini oluştur
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                // Kimlik doğrulama özelliklerini oluştur
-                var authProperties = new AuthenticationProperties
                 {
-                    IsPersistent = false  // Tarayıcı kapatıldığında kullanıcıyı oturumda tut
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 };
 
-                // Kullanıcıyı oturum açtır
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = false
+                };
+
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), authProperties);
 
                 HttpContext.Response.Cookies.Append("UserID", user.Id.ToString(), new CookieOptions
                 {
-                    Expires = DateTimeOffset.UtcNow.AddDays(30), // Çerezin geçerlilik süresi
-                    HttpOnly = true, // JavaScript erişimini engeller
-                    Secure = false // Sadece HTTPS üzerinden gönderilmesini sağlar
+                    Expires = DateTimeOffset.UtcNow.AddDays(30),
+                    HttpOnly = true,
+                    Secure = false
                 });
 
-                return RedirectToAction("Index", "Home");  // Korunan bir sayfaya yönlendir
+                return RedirectToAction("Index", "Home");
             }
 
-            return View(model);  // Geçersiz model durumunda giriş sayfasına dön
+            return View(model);
         }
 
-
-
-
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,PhoneNumber,Email,Password,DateOfBirth,ProfilePhoto,CreatedAt,")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,PhoneNumber,Email,Password,DateOfBirth,ProfilePhoto,CreatedAt")] User user)
         {
             if (id != user.Id)
             {
@@ -157,7 +136,6 @@ namespace PropPulse.Controllers
             return View(user);
         }
 
-        // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -165,8 +143,7 @@ namespace PropPulse.Controllers
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
@@ -176,60 +153,54 @@ namespace PropPulse.Controllers
         }
 
         // GET: Users/Profile
-        [Authorize] // Sadece giriş yapmış kullanıcılar bu sayfaya erişebilir
         public IActionResult Profile()
         {
-            // Oturum açmış kullanıcının kimliğini al
-            string? userEmail = User.Identity.Name;
+            string? userEmail = User.Identity?.Name;
 
-            // Kullanıcı bilgilerini veritabanından getir
-            var user = _context.User.FirstOrDefault(u => u.Email == userEmail);
-            if (user == null)
+            User user;
+
+            if (!string.IsNullOrEmpty(userEmail))
             {
-                return NotFound("Kullanıcı bulunamadı.");
+                user = _context.User.FirstOrDefault(u => u.Email == userEmail);
+            }
+            else
+            {
+                user = new User
+                {
+                    FirstName = "Ziyaretçi",
+                    LastName = "",
+                    Email = "ziyaretci@ornek.com"
+                };
             }
 
-            // ViewBag ile bilgileri gönder
             ViewBag.FullName = $"{user.FirstName} {user.LastName}";
             ViewBag.Email = user.Email;
 
             return View();
         }
 
-
-        // POST: Users/Update
         [HttpPost]
         public IActionResult Update(string FullName, string Email, string Password, IFormFile ProfileImage)
         {
-            // Profil bilgilerini güncelleme işlemi yapılabilir (örneğin, veritabanına kaydetme)
-            // Burada sadece basit bir mesaj dönüyoruz.
-
             TempData["Message"] = "Profil bilgileri başarıyla güncellendi.";
             return RedirectToAction("Profile");
         }
 
-        // GET: Users/MyAds
         public IActionResult MyAds()
         {
-            // Kullanıcının ilanlarını burada sağlayın (örnek veri)
-            //var ads = new List<string>
             ViewData["Title"] = "İlanlarım";
             return View();
         }
 
-        // POST: Users/CreateAd
         [HttpPost]
         public IActionResult CreateAd(string AdTitle, string AdDescription, decimal AdPrice)
         {
-            // İlan oluşturma işlemleri (örneğin, veritabanına kaydetme)
             TempData["Message"] = "İlan başarıyla oluşturuldu.";
             return RedirectToAction("MyAds");
         }
 
-        // GET: Users/Favorites
         public IActionResult Favorites()
         {
-            // Kullanıcının favorilerini burada sağlayın (örnek veri)
             var favorites = new List<string> { "Favori 1", "Favori 2" };
             ViewData["Title"] = "Favorilerim";
             return View(favorites);
@@ -242,15 +213,12 @@ namespace PropPulse.Controllers
 
         private string HashPassword(string password)
         {
-            // Bcrypt hashleme
-            return BCrypt.Net.BCrypt.HashPassword(password); // return HashPassword(password);
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
         private bool VerifyPassword(string inputPassword, string storedPassword)
         {
-            // Assuming you have hashed the passwords using Bcrypt while registering the user
             return BCrypt.Net.BCrypt.Verify(inputPassword, storedPassword);
         }
-
     }
 }
