@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PropPulse.Data;
@@ -10,7 +11,12 @@ namespace PropPulse
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<PropPulseContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("PropPulseContext") ?? throw new InvalidOperationException("Connection string 'PropPulseContext' not found.")));
-
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+                options => { options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Account/Logout";
+                    options.AccessDeniedPath = "/Account/AccessDenied";
+                    }
+                );
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
@@ -29,6 +35,7 @@ namespace PropPulse
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

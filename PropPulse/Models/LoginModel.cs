@@ -1,18 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace YourNamespace.Models
+namespace PropPulse.Models
 {
-    public class LoginViewModel
+    public class LoginModel
     {
-        [Required(ErrorMessage = "E-posta adresi gereklidir.")]
-        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Şifre gereklidir.")]
-        [DataType(DataType.Password)]
+        [Required]
+        [StringLength(100, MinimumLength = 6)]
         public string Password { get; set; }
-
-        [Display(Name = "Beni Hatırla")]
-        public bool RememberMe { get; set; }
     }
+
 }

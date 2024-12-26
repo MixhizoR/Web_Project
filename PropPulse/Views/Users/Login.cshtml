@@ -1,4 +1,4 @@
-﻿@model YourNamespace.Models.LoginViewModel
+﻿@model PropPulse.Models.LoginModel
 
 @{
     ViewData["Title"] = "Giriş Yap";
@@ -18,10 +18,6 @@
                     <label asp-for="Password" class="form-label"></label>
                     <input asp-for="Password" class="form-control" />
                     <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="form-group form-check mt-3">
-                    <input asp-for="RememberMe" class="form-check-input" />
-                    <label asp-for="RememberMe" class="form-check-label"></label>
                 </div>
                 <div class="form-group mt-4">
                     <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,7 +20,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Satılık</a>
@@ -37,7 +37,17 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Login">Giriş Yap</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Profile">Profil</a>
+                        </li>
 
+
+                        <!-- Profil Fotoğrafı -->
+                        <li class="nav-item ms-3">
+                            <a class="nav-link" href="#">
+                                <img src="@ViewBag.ProfileImageUrl" alt="Profil Fotoğrafı" class="rounded-circle" width="40" height="40" />
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -50,20 +60,19 @@
             @RenderBody()
         </main>
     </div>
-    <head>
-        <style>
-            body {
-                background-image: url("/images/NewYork.jpg");
-                background-size: cover;
-                background-position: center;
-            }
-        </style>
-    </head>
+
+    <style>
+        body {
+            background-image: url("/images/NewYork.jpg");
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+
     <footer class="border-top footer text-muted text-center">
         <p style="color: white;">Site Yapımcıları</p>
         <p style="color: white;">Emre Gülseven | Oğuz Selman Çetin | Osman Tüzen | Yıldız Başak Eroğlu</p>
     </footer>
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -71,4 +80,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-

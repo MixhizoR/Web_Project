@@ -1,8 +1,68 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@* CSS'i burada sayfaya dahil ediyoruz *@
+<link rel="stylesheet" href="~/css/styles.css" />
+
+<div class="container">
+    <h1>Hoş Geldiniz!</h1>
+
+    <!-- Kaydırılabilir Kutucuklar (Carousel) -->
+    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/800x300?text=İlan+1" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/800x300?text=İlan+2" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/800x300?text=İlan+3" class="d-block w-100" alt="...">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12 col-md-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/300x200?text=İlan+1" class="card-img-top" alt="İlan 1">
+                <div class="card-body">
+                    <h5 class="card-title">İlan Başlığı 1</h5>
+                    <p class="card-text">Açıklama: Bu bir örnek ilan açıklamasıdır.</p>
+                    <a href="#" class="btn btn-primary">İlanı Görüntüle</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/300x200?text=İlan+2" class="card-img-top" alt="İlan 2">
+                <div class="card-body">
+                    <h5 class="card-title">İlan Başlığı 2</h5>
+                    <p class="card-text">Açıklama: Bu bir örnek ilan açıklamasıdır.</p>
+                    <a href="#" class="btn btn-primary">İlanı Görüntüle</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/300x200?text=İlan+3" class="card-img-top" alt="İlan 3">
+                <div class="card-body">
+                    <h5 class="card-title">İlan Başlığı 3</h5>
+                    <p class="card-text">Açıklama: Bu bir örnek ilan açıklamasıdır.</p>
+                    <a href="#" class="btn btn-primary">İlanı Görüntüle</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

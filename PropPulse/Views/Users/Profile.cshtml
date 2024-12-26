@@ -1,0 +1,42 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Profilim";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Profil Fotoğrafı ve Bilgiler -->
+            <div class="card">
+                <!-- Profil Fotoğrafı ve Profil Bilgileri Düzenleme Formu -->
+                <form method="post" enctype="multipart/form-data" action="/Users/UpdateProfile">
+                    <div class="card-body text-center">
+
+                        <!-- Kullanıcı Bilgileri -->
+                        <div class="form-group mt-3">
+                            <label for="FullName">Ad Soyad</label>
+                            <input type="text" class="form-control" id="FullName" name="FullName" value="@ViewBag.FullName" />
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="Email">E-posta</label>
+                            <input type="email" class="form-control" id="Email" name="Email" value="@ViewBag.Email" />
+                        </div>
+
+                        <!-- Güncelleme Butonu -->
+                        <button type="submit" class="btn btn-primary mt-3">Profil Bilgilerini Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="col-md-8">
+                <!-- Sekme Butonları: Her buton başka bir sayfaya yönlendirecek -->
+                <div class="btn-group-vertical w-100" role="group" aria-label="Profil Butonları">
+                    <a href="/Users/Profile" class="btn btn-outline-primary w-100">Profil Bilgilerim</a>
+                    <a href="/Ads/MyAds" class="btn btn-outline-primary w-100 mt-2">İlanlarım</a>
+                    <a href="/Ads/Favorites" class="btn btn-outline-primary w-100 mt-2">Favorilerim</a>
+                    <!-- İlan Ver Butonu -->
+                    <a href="/Ads/Create" class="btn btn-outline-primary w-100 mt-2">İlan Ver</a> <!-- İlan Ver Butonu -->
+                </div>
+            </div>

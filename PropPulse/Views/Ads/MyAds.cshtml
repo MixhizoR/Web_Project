@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "İlanlarım";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">İlanlarım</h2>
+
+    <ul class="list-group">
+        @foreach (var ad in Model)
+        {
+            <li class="list-group-item">
+                @ad
+            </li>
+        }
+    </ul>
+
+    <a href="@Url.Action("CreateAd", "Users")" class="btn btn-success mt-4">Yeni İlan Oluştur</a>
+</div>
