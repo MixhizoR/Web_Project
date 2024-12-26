@@ -1,23 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PropPulse.Data;
 using PropPulse.Models;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace PropPulse.Controllers
 {
     public class PropertiesController : Controller
     {
         private readonly PropPulseContext _context;
-
         public PropertiesController(PropPulseContext context)
         {
             _context = context;
         }
+        // GET: Ads/Favorites
+        public IActionResult Favorites()
+        {
+            // Kullanıcının favorilerini burada sağlayın (örnek veri)
+            var favorites = new List<string> { "Favori 1", "Favori 2", "Favori 3" };
+            ViewData["Title"] = "Favorilerim";
 
-        // POST: Properties/Create
+            // Veriyi View'a gönderiyoruz
+            return View(favorites);  // Model geçiyoruz
+        }
+
+        // POST: Ads/CreateAd
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Property property, List<IFormFile> Photos)
@@ -32,61 +40,62 @@ namespace PropPulse.Controllers
                     return View(property);
                 }
 
-                // Fotoğraf validasyonu: Yalnızca .jpg ve .jpeg formatına izin veriyoruz
-                if (Photos != null && Photos.Any())
+                //Fotoğraf validasyonu
+                //if (Photos.Count < 3 || Photos.Count > 5)
+                //{
+                //    ModelState.AddModelError("Photos", "En az 3, en fazla 5 fotoğraf yüklemelisiniz.");
+                //}
+
+                if (ModelState.IsValid)
                 {
-                    foreach (var photo in Photos)
-                    {
-                        // Dosyanın uzantısını kontrol et
-                        var extension = Path.GetExtension(photo.FileName).ToLower();
+                    // Fotoğrafları yükleme ve kaydetme
+                    //property.Photos = new List<string>();
+                    //foreach (var photo in Photos)
+                    //{
+                    //    if (photo.Length > 0)
+                    //    {
+                    //        try
+                    //        {
+                    //            var fileName = Path.GetFileName(photo.FileName);
+                    //            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                    //            var filePath = Path.Combine(uploadsFolder, fileName);
 
-                        // Sadece .jpg veya .jpeg dosyalarına izin ver
-                        if (extension != ".jpg" && extension != ".jpeg")
-                        {
-                            ModelState.AddModelError("Photos", "Sadece .jpg veya .jpeg formatında fotoğraf yükleyebilirsiniz.");
-                            return View(property);  // Hata varsa, formu tekrar yükle
-                        }
-                    }
-                }
+                    //            // Klasör yoksa oluştur
+                    //            if (!Directory.Exists(uploadsFolder))
+                    //            {
+                    //                Directory.CreateDirectory(uploadsFolder);
+                    //            }
 
-                // Fotoğrafları yükleme ve kaydetme
-                if (Photos != null && Photos.Any())
-                {
-                    property.Photos = new List<string>(); // Fotoğraf listesi başlatılır
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                    //            // Dosyayı kaydet
+                    //            using (var stream = new FileStream(filePath, FileMode.Create))
+                    //            {
+                    //                await photo.CopyToAsync(stream);
+                    //            }
 
-                    // Klasör yoksa oluştur
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
+                    //            // Kaydedilen dosya yolunu ekle
+                    //            property.Photos.Add($"/uploads/{fileName}");
+                    //        }
+                    //        catch (Exception ex)
+                    //        {
+                    //            // Fotoğraf yükleme hatası loglama
+                    //            Console.WriteLine($"Fotoğraf yüklenirken hata oluştu: {ex.Message}");
+                    //            ModelState.AddModelError("Photos", "Bazı fotoğraflar yüklenemedi. Lütfen tekrar deneyin.");
+                    //            return View(property);
+                    //        }
+                    //    }
+                    //}
 
-                    foreach (var photo in Photos)
-                    {
-                        if (photo.Length > 0)
-                        {
-                            var fileName = Path.GetFileName(photo.FileName);
-                            var filePath = Path.Combine(uploadsFolder, fileName);
-
-                            using (var stream = new FileStream(filePath, FileMode.Create))
-                            {
-                                await photo.CopyToAsync(stream);
-                            }
-
-                            // Kaydedilen dosya yolunu ekle
-                            property.Photos.Add($"/uploads/{fileName}");
-                        }
-                    }
-                }
-
-                // Kullanıcı ID'sini Property'e Ekle
+                   // Kullanıcı ID'sini Property'e Ekle
                 property.UserID = userId;
 
-                // Veritabanına kaydet
-                _context.Properties.Add(property);
-                await _context.SaveChangesAsync();
+                    // Veritabanına kaydet
+                    _context.Properties.Add(property);
+                    await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index", "Home"); // Başarılı işlem sonrası yönlendirme
+                    return RedirectToAction("Index", "Home"); // Başarılı işlem sonrası yönlendirme
+                }
+
+                return View(property); // Validasyon hatası varsa formu yeniden yükle
             }
             catch (Exception ex)
             {
@@ -97,29 +106,30 @@ namespace PropPulse.Controllers
             }
         }
 
-        // GET: Properties/Favorites
-        public IActionResult Favorites()
-        {
-            // Kullanıcının favorilerini burada sağlayın (örnek veri)
-            var favorites = new List<string> { "Favori 1", "Favori 2", "Favori 3" };
-            ViewData["Title"] = "Favorilerim";
 
-            // Veriyi View'a gönderiyoruz
-            return View(favorites);  // Model geçiyoruz
-        }
 
-        // GET: Properties/MyAds
-        public IActionResult MyAds()
+        // GET: Ads/MyAds
+        public IActionResult MyProperties()
         {
-            // Kullanıcının ilanlarına dair örnek veri
-            var ads = new List<string> { "İlan 1", "İlan 2", "İlan 3" };
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                // Kullanıcı kimliği alınamadıysa hata veya yönlendirme yapılabilir
+                return RedirectToAction("Login", "Account");
+            }
+
+            var models = _context.Properties
+            .Where(p => p.UserID == int.Parse(userId))
+            .ToList();
+
             ViewData["Title"] = "İlanlarım";
 
             // View'a model gönderiyoruz
-            return View(ads); // Modeli View'a gönderiyoruz
+            return View(models); // Modeli View'a gönderiyoruz
         }
 
-        // GET: Properties/Create
+        // GET: Ads/Create
         public IActionResult Create()
         {
             // İlan verme sayfası için örnek veriler
@@ -131,11 +141,97 @@ namespace PropPulse.Controllers
             return View();
         }
 
-        // GET: Properties/CreateAdForm
-        public IActionResult CreateAdForm()
+        // GET: Properties/Edit/1
+        public IActionResult Edit(int id)
         {
-            // İlan oluşturma formu (örnek veri gerekirse eklenebilir)
-            return View();
+            // İlanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // İlanı düzenleme formu için View'a gönder
+            return View(property);
         }
+
+        // POST: Properties/Edit/1
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Property model)
+        {
+            // İlanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // Model geçerli değilse tekrar formu göster
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // İlanın özelliklerini güncelle
+            property.Title = model.Title;
+            property.Price = model.Price;
+            property.Area = model.Area;
+            property.Address = model.Address;
+            property.Description = model.Description;
+            property.IsFurnished = model.IsFurnished;
+            property.SquareMeter = model.SquareMeter;
+
+            // Değişiklikleri kaydet
+            _context.SaveChanges();
+
+            // Kullanıcıyı ilanlar sayfasına yönlendir
+            return RedirectToAction(nameof(MyProperties));
+        }
+
+
+        // GET: Properties/Delete/1
+        public IActionResult Delete(int id)
+        {
+            // İlanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // İlan bilgilerini View'a gönder
+            return View(property);
+        }
+
+
+        // POST: Properties/Delete/1
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            // Silinecek ilanı veritabanından bul
+            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+
+            // İlan bulunamazsa hata sayfası göster
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            // İlanı veritabanından sil
+            _context.Properties.Remove(property);
+            _context.SaveChanges();  // Değişiklikleri kaydet
+
+            // Kullanıcıyı ilanlar sayfasına yönlendir
+            return RedirectToAction(nameof(MyProperties));
+        }
+
     }
 }

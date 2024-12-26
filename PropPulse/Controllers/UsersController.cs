@@ -186,19 +186,7 @@ namespace PropPulse.Controllers
             return RedirectToAction("Profile");
         }
 
-        public IActionResult MyAds()
-        {
-            ViewData["Title"] = "İlanlarım";
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult CreateAd(string AdTitle, string AdDescription, decimal AdPrice)
-        {
-            TempData["Message"] = "İlan başarıyla oluşturuldu.";
-            return RedirectToAction("MyAds");
-        }
-
+        // GET: Users/Favorites
         public IActionResult Favorites()
         {
             var favorites = new List<string> { "Favori 1", "Favori 2" };
