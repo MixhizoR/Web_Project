@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PropPulse.Data;
+using PropPulse.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace PropPulse
 {
     public class Program
@@ -8,33 +11,38 @@ namespace PropPulse
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<PropPulseContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("PropPulseContext") ?? throw new InvalidOperationException("Connection string 'PropPulseContext' not found.")));
 
-            // Add services to the container.
+            // ApplicationDbContext'i ekliyoruz ve doðru baðlantý dizesini kullanýyoruz.
+            builder.Services.AddDbContext<PropPulseContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") 
+                                      ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
+
+            // Hizmetleri ekliyoruz (Controllers & Views)
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // HTTP istekleri yapýlandýrmasýný yapýyoruz.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
+            // HTTPS yönlendirmesi ve statik dosyalar.
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // Routing ve authorization yapýlandýrmasý
             app.UseRouting();
-
             app.UseAuthorization();
 
+            // Varsayýlan rota ayarlýyoruz
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            // Uygulamayý çalýþtýrýyoruz.
             app.Run();
         }
     }

@@ -14,6 +14,7 @@ namespace PropPulse.Data
         {
         }
 
-        public DbSet<PropPulse.Models.User> User { get; set; } = default!;
+        public DbSet<User> User { get; set; }
+        public DbSet<Property> Properties { get; set; }
     }
 }
