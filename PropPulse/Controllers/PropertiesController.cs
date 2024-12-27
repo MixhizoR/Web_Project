@@ -48,45 +48,53 @@ namespace PropPulse.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    // Fotoğraf validasyonu: Yalnızca .jpg ve .jpeg formatına izin veriyoruz
+                    if (Photos != null && Photos.Any())
+                    {
+                        foreach (var photo in Photos)
+                        {
+                            // Dosyanın uzantısını kontrol et
+                            var extension = Path.GetExtension(photo.FileName).ToLower();
+
+                            // Sadece .jpg veya .jpeg dosyalarına izin ver
+                            if (extension != ".jpg" && extension != ".jpeg")
+                            {
+                                ModelState.AddModelError("Photos", "Sadece .jpg veya .jpeg formatında fotoğraf yükleyebilirsiniz.");
+                                return View(property);  // Hata varsa, formu tekrar yükle
+                            }
+                        }
+                    }
+
                     // Fotoğrafları yükleme ve kaydetme
-                    //property.Photos = new List<string>();
-                    //foreach (var photo in Photos)
-                    //{
-                    //    if (photo.Length > 0)
-                    //    {
-                    //        try
-                    //        {
-                    //            var fileName = Path.GetFileName(photo.FileName);
-                    //            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-                    //            var filePath = Path.Combine(uploadsFolder, fileName);
+                    if (Photos != null && Photos.Any())
+                    {
+                        property.Photos = new List<string>(); // Fotoğraf listesi başlatılır
+                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
 
-                    //            // Klasör yoksa oluştur
-                    //            if (!Directory.Exists(uploadsFolder))
-                    //            {
-                    //                Directory.CreateDirectory(uploadsFolder);
-                    //            }
+                        // Klasör yoksa oluştur
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
 
-                    //            // Dosyayı kaydet
-                    //            using (var stream = new FileStream(filePath, FileMode.Create))
-                    //            {
-                    //                await photo.CopyToAsync(stream);
-                    //            }
+                        foreach (var photo in Photos)
+                        {
+                            if (photo.Length > 0)
+                            {
+                                var fileName = Path.GetFileName(photo.FileName);
+                                var filePath = Path.Combine(uploadsFolder, fileName);
 
-                    //            // Kaydedilen dosya yolunu ekle
-                    //            property.Photos.Add($"/uploads/{fileName}");
-                    //        }
-                    //        catch (Exception ex)
-                    //        {
-                    //            // Fotoğraf yükleme hatası loglama
-                    //            Console.WriteLine($"Fotoğraf yüklenirken hata oluştu: {ex.Message}");
-                    //            ModelState.AddModelError("Photos", "Bazı fotoğraflar yüklenemedi. Lütfen tekrar deneyin.");
-                    //            return View(property);
-                    //        }
-                    //    }
-                    //}
+                                using (var stream = new FileStream(filePath, FileMode.Create))
+                                {
+                                    await photo.CopyToAsync(stream);
+                                }
 
-                   // Kullanıcı ID'sini Property'e Ekle
-                property.UserID = userId;
+                                // Kaydedilen dosya yolunu ekle
+                                property.Photos.Add($"/uploads/{fileName}");
+                            }
+                        }
+                    }
+                    property.UserID = userId;
 
                     // Veritabanına kaydet
                     _context.Properties.Add(property);

@@ -44,7 +44,7 @@ namespace PropPulse.Models
         public int UserID { get; set; }
         public User? User { get; set; }
         public List<string> Photos { get; set; } = new List<string>();
-
+        public int SquareMeter { get; set; }
     }
 }
 
