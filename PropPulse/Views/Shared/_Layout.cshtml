@@ -24,17 +24,29 @@
                         </li>
                     </ul>
 
-                    <!-- Üye Ol ve Giriş Yap Linkleri -->
+                    <!-- Üye Ol ve Giriş Yap Linkleri Görünür, Eğer Kullanıcı Giriş Yapmamışsa -->
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Create">Üye Ol</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Login">Giriş Yap</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Profile">Profil</a>
-                        </li>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Create">Üye Ol</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Login">Giriş Yap</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Profile">Profil</a>
+                            </li>
+                            <!-- Çıkış Yap Butonu Profil'in Sağında -->
+                            <li class="nav-item">
+                                <form asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-link nav-link text-dark" style="border:none; background:none;">Çıkış Yap</button>
+                                </form>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

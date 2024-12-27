@@ -76,10 +76,10 @@ namespace PropPulse.Controllers
                 }
 
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-        };
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -113,6 +113,16 @@ namespace PropPulse.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            // Kullanıcıyı oturumdan çıkartıyoruz
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // Çıkış işleminden sonra ana sayfaya yönlendirme
+            return RedirectToAction("Index", "Home");  // Ana sayfaya yönlendirme
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -212,15 +222,6 @@ namespace PropPulse.Controllers
             }
 
             return View();
-        }
-
-
-        // GET: Users/Favorites
-        public IActionResult Favorites()
-        {
-            var favorites = new List<string> { "Favori 1", "Favori 2" };
-            ViewData["Title"] = "Favorilerim";
-            return View(favorites);
         }
 
         private bool UserExists(int id)
