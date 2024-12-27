@@ -1,68 +1,61 @@
-﻿@{
-    ViewData["Title"] = "Ana Sayfa";
-}
-
-@* CSS'i burada sayfaya dahil ediyoruz *@
-<link rel="stylesheet" href="~/css/styles.css" />
+﻿@model List<PropPulse.Models.Property>
 
 <div class="container">
-    <h1>Hoş Geldiniz!</h1>
+    <div class="row">
+        @foreach (var property in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <!-- 3 sütunlu düzen için col-md-4 kullanılır -->
+                <div class="property border p-3 rounded bg-light">
+                    <h3>@property.Title</h3>
+                    <p>@property.Address</p>
+                    <p>@property.Price₺</p>
 
-    <!-- Kaydırılabilir Kutucuklar (Carousel) -->
-    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="https://via.placeholder.com/800x300?text=İlan+1" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="https://via.placeholder.com/800x300?text=İlan+2" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="https://via.placeholder.com/800x300?text=İlan+3" class="d-block w-100" alt="...">
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
+                    <div id="carouselExampleAutoplaying_@property.Id" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            @if (property.Photos != null && property.Photos.Count > 0)
+                            {
+                                <div class="carousel-item active">
+                                    <img src="@property.Photos.First()" class="d-block w-100 img-fluid carousel-image" alt="İlan Resmi 1">
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="carousel-item active">
+                                    <img src="https://via.placeholder.com/800x300?text=İlan+Resmi+Yok" class="d-block w-100 img-fluid carousel-image" alt="Varsayılan İlan Resmi">
+                                </div>
+                            }
 
-    <div class="row mt-4">
-        <div class="col-12 col-md-4">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=İlan+1" class="card-img-top" alt="İlan 1">
-                <div class="card-body">
-                    <h5 class="card-title">İlan Başlığı 1</h5>
-                    <p class="card-text">Açıklama: Bu bir örnek ilan açıklamasıdır.</p>
-                    <a href="#" class="btn btn-primary">İlanı Görüntüle</a>
+                            @if (property.Photos != null && property.Photos.Count > 1)
+                            {
+                                @for (int i = 1; i < property.Photos.Count && i < 3; i++) // En fazla 3 fotoğraf
+                                {
+                                    <div class="carousel-item">
+                                        <img src="@property.Photos[i]" class="d-block w-100 img-fluid carousel-image" alt="İlan Resmi @i">
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <!-- Carousel Controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying_@property.Id" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying_@property.Id" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-12 col-md-4">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=İlan+2" class="card-img-top" alt="İlan 2">
-                <div class="card-body">
-                    <h5 class="card-title">İlan Başlığı 2</h5>
-                    <p class="card-text">Açıklama: Bu bir örnek ilan açıklamasıdır.</p>
-                    <a href="#" class="btn btn-primary">İlanı Görüntüle</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-4">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=İlan+3" class="card-img-top" alt="İlan 3">
-                <div class="card-body">
-                    <h5 class="card-title">İlan Başlığı 3</h5>
-                    <p class="card-text">Açıklama: Bu bir örnek ilan açıklamasıdır.</p>
-                    <a href="#" class="btn btn-primary">İlanı Görüntüle</a>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </div>
+
+<style>
+    .carousel-image {
+        object-fit: cover; /* Fotoğrafların kare veya dikey boyutlarının bozulmadan genişlemesini sağlar */
+        height: 300px; /* Fotoğrafların yükseklikleri sabitlenir */
+    }
+</style>

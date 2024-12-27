@@ -76,10 +76,10 @@ namespace PropPulse.Controllers
                 }
 
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-                };
+        {
+            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+        };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -91,6 +91,14 @@ namespace PropPulse.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), authProperties);
 
+                // Kullanıcı bilgilerini ViewBag'e ekleme
+                ViewBag.FirstName = $"{user.FirstName}";
+                ViewBag.LastName = $"{user.LastName}";
+                ViewBag.UserEmail = user.Email;
+                ViewBag.UserPhone = user.PhoneNumber;
+                ViewBag.UserDateOfBirth = user.DateOfBirth.ToString("dd MM yyyy");
+
+                // Kullanıcı ID'sini cookie olarak eklemek
                 HttpContext.Response.Cookies.Append("UserID", user.Id.ToString(), new CookieOptions
                 {
                     Expires = DateTimeOffset.UtcNow.AddDays(30),
@@ -98,11 +106,13 @@ namespace PropPulse.Controllers
                     Secure = false
                 });
 
+                // Ana sayfaya yönlendirme
                 return RedirectToAction("Index", "Home");
             }
 
             return View(model);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -155,29 +165,55 @@ namespace PropPulse.Controllers
         // GET: Users/Profile
         public IActionResult Profile()
         {
-            string? userEmail = User.Identity?.Name;
+            // Kullanıcı ID'sini claims üzerinden alıyoruz
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            User user;
-
-            if (!string.IsNullOrEmpty(userEmail))
+            if (string.IsNullOrEmpty(userId))
             {
-                user = _context.User.FirstOrDefault(u => u.Email == userEmail);
+                // Eğer kullanıcı ID'si yoksa, ziyaretçi olarak varsayıyoruz
+                ViewBag.FullName = "Ziyaretçi";
+                ViewBag.Email = "ziyaretci@ornek.com";
+                ViewBag.PhoneNumber = "N/A";
+                ViewBag.DateOfBirth = "N/A";
+                return View();
+            }
+
+            // Kullanıcı ID'sini int'e dönüştürüyoruz
+            if (int.TryParse(userId, out int userIdInt))
+            {
+                // Kullanıcıyı veritabanından buluyoruz
+                var user = _context.User.FirstOrDefault(u => u.Id == userIdInt);
+
+                if (user != null)
+                {
+                    // Kullanıcı bilgilerini ViewBag'e ekliyoruz
+                    ViewBag.FirstName = user.FirstName;
+                    ViewBag.LastName = user.LastName;
+                    ViewBag.Email = user.Email;
+                    ViewBag.PhoneNumber = user.PhoneNumber;
+                    ViewBag.DateOfBirth = user.DateOfBirth.ToString("dd MM yyyy");
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Kullanıcı bulunamadı.";
+                }
+
+                // Kullanıcıya ait ilanları alıyoruz
+                var models = _context.Properties
+                    .Where(p => p.UserID == userIdInt)
+                    .ToList();
+
+                // İlanları ViewBag'e ekliyoruz
+                ViewBag.UserProperties = models;
             }
             else
             {
-                user = new User
-                {
-                    FirstName = "Ziyaretçi",
-                    LastName = "",
-                    Email = "ziyaretci@ornek.com"
-                };
+                ViewBag.ErrorMessage = "Geçersiz kullanıcı bilgisi.";
             }
-
-            ViewBag.FullName = $"{user.FirstName} {user.LastName}";
-            ViewBag.Email = user.Email;
 
             return View();
         }
+
 
         // GET: Users/Favorites
         public IActionResult Favorites()

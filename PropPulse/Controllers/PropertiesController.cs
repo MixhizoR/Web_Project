@@ -142,8 +142,9 @@ namespace PropPulse.Controllers
         // GET: Properties/Edit/1
         public IActionResult Edit(int id)
         {
-            // İlanı veritabanından bul
-            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+            // İlanı veritabanından bul, Photos'u dahil etmiyoruz çünkü koleksiyon değil
+            var property = _context.Properties
+                .FirstOrDefault(p => p.Id == id);
 
             // İlan bulunamazsa hata sayfası göster
             if (property == null)
@@ -158,10 +159,11 @@ namespace PropPulse.Controllers
         // POST: Properties/Edit/1
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Property model)
+        public async Task<IActionResult> Edit(int id, Property model, List<IFormFile> newPhotos, List<string> existingPhotosToDelete)
         {
-            // İlanı veritabanından bul
-            var property = _context.Properties.FirstOrDefault(p => p.Id == id);
+            // İlanı veritabanından bul, Photos'u dahil etmiyoruz çünkü koleksiyon değil
+            var property = _context.Properties
+                .FirstOrDefault(p => p.Id == id);
 
             // İlan bulunamazsa hata sayfası göster
             if (property == null)
@@ -175,7 +177,7 @@ namespace PropPulse.Controllers
                 return View(model);
             }
 
-            // İlanın özelliklerini güncelle
+            // İlanın temel bilgilerini güncelle
             property.Title = model.Title;
             property.Price = model.Price;
             property.Area = model.Area;
@@ -184,12 +186,63 @@ namespace PropPulse.Controllers
             property.IsFurnished = model.IsFurnished;
             property.RoomCount = model.RoomCount;
 
+            // Yeni fotoğrafları kaydet
+            if (newPhotos != null && newPhotos.Any())
+            {
+                foreach (var photo in newPhotos)
+                {
+                    var extension = Path.GetExtension(photo.FileName).ToLower();
+
+                    // Sadece .jpg ve .jpeg dosyalarına izin ver
+                    if (extension != ".jpg" && extension != ".jpeg")
+                    {
+                        ModelState.AddModelError("Photos", "Sadece .jpg veya .jpeg formatında fotoğraf yükleyebilirsiniz.");
+                        return View(model);
+                    }
+
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+                    // Klasör yoksa oluştur
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var fileName = Guid.NewGuid().ToString() + extension;
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await photo.CopyToAsync(stream);
+                    }
+
+                    // Yeni fotoğrafı ekle
+                    property.Photos.Add($"/uploads/{fileName}");
+                }
+            }
+
+            // Eski fotoğrafları sil
+            if (existingPhotosToDelete != null && existingPhotosToDelete.Any())
+            {
+                foreach (var photoPath in existingPhotosToDelete)
+                {
+                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photoPath.TrimStart('/'));
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath); // Dosyayı sil
+                    }
+
+                    property.Photos.Remove(photoPath); // DB'den kaldır
+                }
+            }
+
             // Değişiklikleri kaydet
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             // Kullanıcıyı ilanlar sayfasına yönlendir
             return RedirectToAction(nameof(MyProperties));
         }
+
 
 
         // GET: Properties/Delete/1

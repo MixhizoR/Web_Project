@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "EuLLFEwSzas=",
+  "dgSpecHash": "ISrRv53khY4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\EMRE\\Desktop\\WebProjesks\\PropPulse\\PropPulse.csproj",
+  "projectFilePath": "C:\\Users\\EMRE\\Desktop\\Bağlantı\\PropPulse\\PropPulse.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\EMRE\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\EMRE\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

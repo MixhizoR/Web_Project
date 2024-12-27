@@ -1,67 +1,88 @@
-﻿@model Property
+﻿@model PropPulse.Models.Property
 
 @{
-    ViewData["Title"] = "İlanı Düzenle";
+    ViewData["Title"] = "İlan Düzenle";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">İlanı Düzenle</h2>
+<h1>İlan Düzenle</h1>
 
-    <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="Id" />
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
 
-        <div class="form-group">
-            <label asp-for="Title" class="control-label">Başlık</label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Area"></label>
+        <input asp-for="Area" class="form-control" />
+        <span asp-validation-for="Area" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address"></label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="IsFurnished" class="form-label">Eşya Durumu</label>
+        <select class="form-select" id="IsFurnished" name="IsFurnished" required>
+            <option value="">Seçiniz</option>
+            <option value="true">Eşyalı</option>
+            <option value="false">Eşyasız</option>
+        </select>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="RoomCount"></label>
+        <input asp-for="RoomCount" class="form-control" />
+        <span asp-validation-for="RoomCount" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label for="IsRent" class="form-label">Durum</label>
+        <select class="form-select" id="IsRent" name="IsRent" required>
+            <option value="">Seçiniz</option>
+            <option value="true">Kiralık</option>
+            <option value="false">Satılık</option>
+        </select>
+    <div class="form-group">
+        <label>Mevcut Fotoğraflar</label>
+        <div>
+            @foreach (var photo in Model.Photos)
+            {
+                <div class="photo-item">
+                    <img src="@photo" alt="Fotoğraf" style="width: 100px; height: auto;" />
+                    <input type="checkbox" name="existingPhotosToDelete" value="@photo" />
+                    <span>Sil</span>
+                </div>
+            }
         </div>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="Price" class="control-label">Fiyat</label>
-            <input asp-for="Price" class="form-control" />
-            <span asp-validation-for="Price" class="text-danger"></span>
-        </div>
+    <div class="form-group">
+        <label>Yeni Fotoğraflar Ekle</label>
+        <input type="file" name="newPhotos" multiple class="form-control" />
+    </div>
 
-        <div class="form-group">
-            <label asp-for="Area" class="control-label">Alan</label>
-            <input asp-for="Area" class="form-control" />
-            <span asp-validation-for="Area" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Address" class="control-label">Adres</label>
-            <input asp-for="Address" class="form-control" />
-            <span asp-validation-for="Address" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Description" class="control-label">Açıklama</label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="IsFurnished" class="control-label">Eşyalı Durum</label>
-            <select asp-for="IsFurnished" class="form-control">
-                <option value="true">Eşyalı</option>
-                <option value="false">Eşyasız</option>
-            </select>
-            <span asp-validation-for="IsFurnished" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="RoomCount" class="control-label">Oda Sayısı</label>
-            <input asp-for="RoomCount" class="form-control" />
-            <span asp-validation-for="RoomCount" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-success">Güncelle</button>
-        <a href="@Url.Action("MyProperties", "Properties")" class="btn btn-secondary">İptal</a>
-    </form>
-</div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

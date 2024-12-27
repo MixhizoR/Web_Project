@@ -7646,11 +7646,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\EMRE\\Desktop\\WebProjesks\\PropPulse\\PropPulse.csproj",
+      "projectUniqueName": "C:\\Users\\EMRE\\Desktop\\Bağlantı\\PropPulse\\PropPulse.csproj",
       "projectName": "PropPulse",
-      "projectPath": "C:\\Users\\EMRE\\Desktop\\WebProjesks\\PropPulse\\PropPulse.csproj",
+      "projectPath": "C:\\Users\\EMRE\\Desktop\\Bağlantı\\PropPulse\\PropPulse.csproj",
       "packagesPath": "C:\\Users\\EMRE\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\EMRE\\Desktop\\WebProjesks\\PropPulse\\obj\\",
+      "outputPath": "C:\\Users\\EMRE\\Desktop\\Bağlantı\\PropPulse\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

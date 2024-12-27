@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "İlanlarım";
 }
-
+@using System.Linq
 <div class="container mt-5">
     <h2 class="text-center mb-4">İlanlarım</h2>
 
@@ -18,6 +18,23 @@
                         <p><strong>Açıklama:</strong> @ad.Description</p>
                         <p><strong>Eşya Durumu:</strong> @(ad.IsFurnished ? "Eşyalı" : "Eşyasız")</p>
                         <p><strong>Oda Sayısı:</strong> @ad.RoomCount</p>
+                        <p><strong>Durum</strong>@ad.IsRent</p>
+
+                        @if (ad.Photos != null && ad.Photos.Count > 0)
+                        {
+                            <p><strong>Fotoğraflar:</strong></p>
+                            <ul>
+                                @foreach (var photo in ad.Photos)
+                                {
+                                    <li><img src="@photo" alt="Fotoğraf" style="max-width: 200px; max-height: 150px;" /></li>
+                                }
+                            </ul>
+                        }
+
+                        @if (ad.User != null)
+                        {
+                            <p><strong>Kullanıcı:</strong> @ad.User.Name (@ad.User.Id)</p>
+                        }
                     </div>
                     <div class="col-md-4">
                         <a href="@Url.Action("Edit", "Properties", new { id = ad.Id })" class="btn btn-primary btn-block">Düzenle</a>

@@ -48,6 +48,8 @@ namespace PropPulse.Models
         [Required(ErrorMessage = "RoomCount is required.")]
         [Range(1, 10, ErrorMessage = "RoomCount must be between 1 and 10")]
         public int RoomCount { get; set; }
+        [Required]
+        public bool IsRent {  get; set; }
     }
 }
 

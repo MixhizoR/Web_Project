@@ -5,40 +5,56 @@
 
 <div class="container mt-5">
     <div class="row">
+        <!-- Profil Bilgileri ve Fotoğraf Düzenleme -->
         <div class="col-md-4">
-            <!-- Profil Fotoğrafı ve Bilgiler -->
-            <div class="card">
+            <div class="card shadow-sm">
                 <!-- Profil Fotoğrafı ve Profil Bilgileri Düzenleme Formu -->
                 <form method="post" enctype="multipart/form-data" action="/Users/Edit">
                     <div class="card-body text-center">
 
-                        <!-- Kullanıcı Bilgileri -->
                         <div class="form-group mt-3">
-                            <label for="FullName">Ad Soyad</label>
-                            <input type="text" class="form-control" id="FullName" name="FullName" value="@ViewBag.FullName" />
+                            <label for="FirstName" class="form-label">Ad</label>
+                            <input type="text" class="form-control" id="FirstName" name="FirstName" value="@ViewBag.FirstName" required />
                         </div>
                         <div class="form-group mt-3">
-                            <label for="Email">E-posta</label>
-                            <input type="email" class="form-control" id="Email" name="Email" value="@ViewBag.Email" />
+                            <label for="LastName" class="form-label">Soyad</label>
+                            <input type="text" class="form-control" id="LastName" name="LastName" value="@ViewBag.LastName" required />
                         </div>
                         <div class="form-group mt-3">
-                        
+                            <label for="Email" class="form-label">E-posta</label>
+                            <input type="email" class="form-control" id="Email" name="Email" value="@ViewBag.Email" required />
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="PhoneNumber" class="form-label">Telefon Numarası</label>
+                            <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" value="@ViewBag.PhoneNumber" />
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="DateOfBirth" class="form-label">Doğum Tarihi</label>
+                            <input type="date" class="form-control" id="DateOfBirth" name="DateOfBirth" value="@ViewBag.DateOfBirth" required />
+                        </div>
 
                         <!-- Güncelleme Butonu -->
-                        <button type="submit" class="btn btn-primary mt-3">Profil Bilgilerini Güncelle</button>
+                        <button type="submit" class="btn btn-primary mt-4 w-100">Profil Bilgilerini Güncelle</button>
                     </div>
                 </form>
             </div>
         </div>
 
+        <!-- Profil Sekmeleri -->
         <div class="col-md-8">
-            <div class="col-md-8">
-                <!-- Sekme Butonları: Her buton başka bir sayfaya yönlendirecek -->
-                <div class="btn-group-vertical w-100" role="group" aria-label="Profil Butonları">
-                    <a href="/Users/Profile" class="btn btn-outline-primary w-100">Profil Bilgilerim</a>
-                    <a href="/Properties/MyProperties" class="btn btn-outline-primary w-100 mt-2">İlanlarım</a>
-                    <a href="/Properties/Favorites" class="btn btn-outline-primary w-100 mt-2">Favorilerim</a>
-                    <!-- İlan Ver Butonu -->
-                    <a href="/Properties/Create" class="btn btn-outline-primary w-100 mt-2">İlan Ver</a> <!-- İlan Ver Butonu -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Sekme Butonları: Her buton başka bir sayfaya yönlendirecek -->
+                    <div class="btn-group-vertical w-100" role="group" aria-label="Profil Butonları">
+                        <a href="/Properties/MyProperties" class="btn btn-outline-primary w-100 mb-3">İlanlarım</a>
+                        <a href="/Properties/Favorites" class="btn btn-outline-primary w-100 mb-3">Favorilerim</a>
+                        <a href="/Properties/Create" class="btn btn-outline-primary w-100">İlan Ver</a>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS ve Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
