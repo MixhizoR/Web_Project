@@ -44,7 +44,10 @@ namespace PropPulse.Models
         public int UserID { get; set; }
         public User? User { get; set; }
         public List<string> Photos { get; set; } = new List<string>();
-        public int SquareMeter { get; set; }
+
+        [Required(ErrorMessage = "RoomCount is required.")]
+        [Range(1, 10, ErrorMessage = "RoomCount must be between 1 and 10")]
+        public int RoomCount { get; set; }
     }
 }
 

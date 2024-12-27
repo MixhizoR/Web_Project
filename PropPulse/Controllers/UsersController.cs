@@ -179,13 +179,6 @@ namespace PropPulse.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Update(string FullName, string Email, string Password, IFormFile ProfileImage)
-        {
-            TempData["Message"] = "Profil bilgileri başarıyla güncellendi.";
-            return RedirectToAction("Profile");
-        }
-
         // GET: Users/Favorites
         public IActionResult Favorites()
         {

@@ -40,12 +40,6 @@ namespace PropPulse.Controllers
                     return View(property);
                 }
 
-                //Fotoğraf validasyonu
-                //if (Photos.Count < 3 || Photos.Count > 5)
-                //{
-                //    ModelState.AddModelError("Photos", "En az 3, en fazla 5 fotoğraf yüklemelisiniz.");
-                //}
-
                 if (ModelState.IsValid)
                 {
                     // Fotoğraf validasyonu: Yalnızca .jpg ve .jpeg formatına izin veriyoruz
@@ -114,9 +108,6 @@ namespace PropPulse.Controllers
             }
         }
 
-
-
-        // GET: Ads/MyAds
         public IActionResult MyProperties()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -137,7 +128,6 @@ namespace PropPulse.Controllers
             return View(models); // Modeli View'a gönderiyoruz
         }
 
-        // GET: Ads/Create
         public IActionResult Create()
         {
             // İlan verme sayfası için örnek veriler
@@ -192,7 +182,7 @@ namespace PropPulse.Controllers
             property.Address = model.Address;
             property.Description = model.Description;
             property.IsFurnished = model.IsFurnished;
-            property.SquareMeter = model.SquareMeter;
+            property.RoomCount = model.RoomCount;
 
             // Değişiklikleri kaydet
             _context.SaveChanges();
