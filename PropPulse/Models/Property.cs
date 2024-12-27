@@ -3,7 +3,6 @@
 namespace PropPulse.Models
 {
     public class Property
-
     {
         // ID'si olmalı!
         public int Id { get; set; }

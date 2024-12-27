@@ -16,5 +16,6 @@ namespace PropPulse.Data
 
         public DbSet<User> User { get; set; }
         public DbSet<Property> Properties { get; set; }
+        public object Favorites { get; internal set; }
     }
 }
