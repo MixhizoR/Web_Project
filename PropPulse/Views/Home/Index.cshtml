@@ -16,7 +16,10 @@
                             @if (property.Photos != null && property.Photos.Count > 0)
                             {
                                 <div class="carousel-item active">
-                                    <img src="@property.Photos.First()" class="d-block w-100 img-fluid carousel-image" alt="İlan Resmi 1">
+                                    <!-- Resme tıklanabilir link ekliyoruz -->
+                                    <a href="@Url.Action("Details", "Properties", new { id = property.Id })">
+                                        <img src="@property.Photos.First()" class="d-block w-100 img-fluid carousel-image" alt="İlan Resmi 1">
+                                    </a>
                                 </div>
                             }
                             else
@@ -31,7 +34,10 @@
                                 @for (int i = 1; i < property.Photos.Count && i < 3; i++) // En fazla 3 fotoğraf
                                 {
                                     <div class="carousel-item">
-                                        <img src="@property.Photos[i]" class="d-block w-100 img-fluid carousel-image" alt="İlan Resmi @i">
+                                        <!-- Resme tıklanabilir link ekliyoruz -->
+                                        <a href="@Url.Action("Details", "Properties", new { id = property.Id })">
+                                            <img src="@property.Photos[i]" class="d-block w-100 img-fluid carousel-image" alt="İlan Resmi @i">
+                                        </a>
                                     </div>
                                 }
                             }

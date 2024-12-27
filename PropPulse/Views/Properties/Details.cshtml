@@ -1,0 +1,40 @@
+﻿@model PropPulse.Models.Property
+
+@{
+    ViewData["Title"] = "İlan Detayları";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">@Model.Title</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">İlan Bilgileri</h5>
+                    <p><strong>Fiyat:</strong> @Model.Price.ToString("C0")</p>
+                    <p><strong>Alan:</strong> @Model.Area m²</p>
+                    <p><strong>Adres:</strong> @Model.Address</p>
+                    <p><strong>Açıklama:</strong> @Model.Description</p>
+                    <p><strong>Eşya Durumu:</strong> @(Model.IsFurnished ? "Eşyalı" : "Eşyasız")</p>
+                    <p><strong>Oda Sayısı:</strong> @Model.RoomCount</p>
+                    <p><strong>Durum:</strong> @(Model.IsRent ? "Kiralık" : "Satılık")</p>
+
+                    <h5 class="mt-4">Fotoğraflar</h5>
+                    <div class="row">
+                        @foreach (var photo in Model.Photos)
+                        {
+                            <div class="col-md-4">
+                                <img src="@photo" class="img-fluid" alt="Property photo" />
+                            </div>
+                        }
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Ana Sayfaya Dön</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

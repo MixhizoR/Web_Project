@@ -260,6 +260,18 @@ namespace PropPulse.Controllers
             // İlan bilgilerini View'a gönder
             return View(property);
         }
+        public async Task<IActionResult> Details(int id)
+        {
+            var property = await _context.Properties
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            return View(property); // İlanı detaylar view'ine gönderiyoruz
+        }
 
 
         // POST: Properties/Delete/1
